@@ -12,15 +12,16 @@ backend:
   repo: gaolamthuy/assets
   branch: main # hoặc master, tùy theo branch chính của bạn
   
-  # Nếu deploy lên Netlify, có thể dùng base_url và auth_endpoint
-  # base_url: https://your-site.netlify.app
-  # auth_endpoint: api/auth
+  # Cấu hình cho Cloudflare Pages
+  # Thay đổi URL này theo domain thực tế của bạn
+  base_url: https://assets.gaolamthuy.vn
+  auth_endpoint: api/auth
 
 # ==========================================
 # MEDIA MANAGEMENT
 # ==========================================
 # Thư mục lưu trữ media files trong repository
-media_folder: "docs/assets/images"
+media_folder: "assets/images"
 # URL public để truy cập media files (từ root của website)
 public_folder: "/assets/images"
 
@@ -39,7 +40,7 @@ collections:
   - name: "images"
     label: "📷 Hình Ảnh"
     label_singular: "Hình ảnh"
-    folder: "docs/assets/images"
+    folder: "assets/images"
     create: true # Cho phép tạo file mới
     delete: true # Cho phép xóa file
     extension: "jpg,jpeg,png,gif,webp,svg"
@@ -69,7 +70,7 @@ collections:
   - name: "icons"
     label: "🎨 Icons"
     label_singular: "Icon"
-    folder: "docs/assets/icons"
+    folder: "assets/icons"
     create: true
     delete: true
     extension: "svg,png,ico"
@@ -99,7 +100,7 @@ collections:
   - name: "logos"
     label: "🏢 Logos"
     label_singular: "Logo"
-    folder: "docs/assets/logos"
+    folder: "assets/logos"
     create: true
     delete: true
     extension: "svg,png,jpg,jpeg"
@@ -145,7 +146,7 @@ collections:
   - name: "logos_brand"
     label: "🏷️ Logos - Brand"
     label_singular: "Logo Brand"
-    folder: "docs/assets/logos/brand"
+    folder: "assets/logos/brand"
     create: true
     delete: true
     extension: "svg,png,jpg,jpeg"
