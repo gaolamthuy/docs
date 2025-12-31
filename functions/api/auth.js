@@ -157,16 +157,16 @@ export async function onRequest(context) {
         }
         
         // Nếu mở trong popup (có window.opener), gửi token qua postMessage
-        // Decap CMS mong đợi format: authorization:github:success:${JSON.stringify(content)}
+        // Decap CMS mong đợi format: authorization:github:success:JSON_STRING
         if (window.opener && !window.opener.closed) {
           try {
             // Format message theo đúng format Decap CMS mong đợi
-            const content = {
+            const authContent = {
               token: token,
               provider: 'github'
             };
-            const contentStr = JSON.stringify(content);
-            const message = 'authorization:github:success:' + contentStr;
+            const authContentStr = JSON.stringify(authContent);
+            const message = 'authorization:github:success:' + authContentStr;
             
             // Gửi token về parent window (Decap CMS)
             window.opener.postMessage(message, window.location.origin);
