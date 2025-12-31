@@ -12,8 +12,7 @@ collections:
     create: true
     slug: "{{slug}}"
     extension: md
-    format: frontmatter
-    frontmatter_delimiter: "---"
+    format: yaml-frontmatter
     fields:
       - {label: "Title", name: "title", widget: "string", required: true}
       - {label: "Layout", name: "layout", widget: "string", default: "page", required: false}
@@ -25,8 +24,7 @@ collections:
     create: true
     slug: "{{slug}}"
     extension: md
-    format: frontmatter
-    frontmatter_delimiter: "---"
+    format: yaml-frontmatter
     fields:
       - {label: "Title", name: "title", widget: "string", required: true}
       - {label: "Description", name: "description", widget: "text", required: false}
@@ -41,8 +39,7 @@ collections:
     create: true
     slug: "{{slug}}"
     extension: md
-    format: frontmatter
-    frontmatter_delimiter: "---"
+    format: yaml-frontmatter
     fields:
       - {label: "Title", name: "title", widget: "string", required: true}
       - {label: "Description", name: "description", widget: "text", required: false}
@@ -54,8 +51,7 @@ collections:
     create: true
     slug: "{{slug}}"
     extension: md
-    format: frontmatter
-    frontmatter_delimiter: "---"
+    format: yaml-frontmatter
     fields:
       - {label: "Title", name: "title", widget: "string", required: true}
       - {label: "Body", name: "body", widget: "markdown"}
