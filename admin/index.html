@@ -45,15 +45,58 @@
         }
         
         // Lắng nghe postMessage từ popup OAuth
+        // Decap CMS sử dụng format: authorization:github:success:${JSON.stringify(content)}
         window.addEventListener('message', function(event) {
           // Chỉ nhận message từ cùng origin
-          if (event.origin !== window.location.origin) return;
+          if (event.origin !== window.location.origin) {
+            console.log('Message from different origin, ignoring:', event.origin);
+            return;
+          }
           
-          if (event.data && event.data.type === 'authorization') {
+          console.log('Received message:', event.data);
+          
+          // Xử lý format Decap CMS: authorization:github:success:${JSON.stringify(content)}
+          if (typeof event.data === 'string' && event.data.includes('authorization:github:success:')) {
+            try {
+              const contentStr = event.data.split('authorization:github:success:')[1];
+              const content = JSON.parse(contentStr);
+              const { token, provider } = content;
+              
+              if (token && provider === 'github') {
+                console.log('Token received from popup, saving to localStorage');
+                
+                // Lưu token vào localStorage
+                const userData = {
+                  token: token,
+                  provider: provider,
+                  name: 'GitHub User',
+                  login: 'github-user'
+                };
+                
+                try {
+                  localStorage.setItem('netlify-cms-user', JSON.stringify(userData));
+                  localStorage.setItem('decap-cms-user', JSON.stringify(userData));
+                  console.log('Token saved to localStorage');
+                } catch(e) {
+                  console.error('Could not save token to localStorage:', e);
+                }
+                
+                // Reload page để Decap CMS nhận token
+                console.log('Reloading page...');
+                window.location.reload();
+              }
+            } catch(e) {
+              console.error('Error parsing message:', e);
+            }
+          }
+          
+          // Fallback: Xử lý format object (nếu có)
+          if (event.data && typeof event.data === 'object' && event.data.type === 'authorization') {
             const { token, provider } = event.data;
             
             if (token && provider === 'github') {
-              // Lưu token vào localStorage
+              console.log('Token received (object format), saving to localStorage');
+              
               const userData = {
                 token: token,
                 provider: provider,
@@ -64,11 +107,13 @@
               try {
                 localStorage.setItem('netlify-cms-user', JSON.stringify(userData));
                 localStorage.setItem('decap-cms-user', JSON.stringify(userData));
+                console.log('Token saved to localStorage');
               } catch(e) {
                 console.error('Could not save token to localStorage:', e);
               }
               
               // Reload page để Decap CMS nhận token
+              console.log('Reloading page...');
               window.location.reload();
             }
           }

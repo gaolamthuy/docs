@@ -107,19 +107,26 @@ export async function onRequest(context) {
         }
         
         // Nếu mở trong popup (có window.opener), gửi token qua postMessage
+        // Decap CMS mong đợi format: authorization:github:success:${JSON.stringify(content)}
         if (window.opener && !window.opener.closed) {
           try {
+            // Format message theo đúng format Decap CMS mong đợi
+            const content = {
+              token: token,
+              provider: 'github'
+            };
+            const contentStr = JSON.stringify(content);
+            const message = 'authorization:github:success:' + contentStr;
+            
             // Gửi token về parent window (Decap CMS)
-            window.opener.postMessage({
-              type: 'authorization',
-              provider: 'github',
-              token: token
-            }, window.location.origin);
+            window.opener.postMessage(message, window.location.origin);
+            
+            console.log('Token sent to parent window');
             
             // Đợi một chút rồi đóng popup
             setTimeout(function() {
               window.close();
-            }, 100);
+            }, 200);
             return;
           } catch(e) {
             console.warn('Could not send postMessage:', e);
