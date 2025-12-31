@@ -35,11 +35,28 @@ export async function onRequest(context) {
     const clientSecret = env.GITHUB_CLIENT_SECRET;
     const redirectUri = `${url.origin}/api/auth`;
 
+    // Kiểm tra environment variables
+    if (!clientId || !clientSecret) {
+      console.error('Missing GitHub OAuth credentials');
+      return new Response(
+        JSON.stringify({ 
+          error: 'GitHub OAuth credentials are not configured. Please set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in Cloudflare Pages environment variables.' 
+        }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    console.log('Exchanging code for token...', { code: code.substring(0, 10) + '...', redirectUri });
+
     const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'User-Agent': 'GaoLamThuy-Assets-CMS',
       },
       body: JSON.stringify({
         client_id: clientId,
@@ -49,17 +66,50 @@ export async function onRequest(context) {
       }),
     });
 
+    // Kiểm tra response status
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      console.error('GitHub token exchange failed:', tokenResponse.status, errorText);
+      return new Response(
+        JSON.stringify({ 
+          error: `GitHub authentication failed: ${tokenResponse.status} ${tokenResponse.statusText}`,
+          details: errorText
+        }),
+        {
+          status: tokenResponse.status,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const tokenData = await tokenResponse.json();
 
     if (tokenData.error) {
+      console.error('GitHub returned error:', tokenData);
       return new Response(
-        JSON.stringify({ error: tokenData.error_description || tokenData.error }),
+        JSON.stringify({ 
+          error: tokenData.error_description || tokenData.error,
+          error_code: tokenData.error
+        }),
         {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
         }
       );
     }
+
+    if (!tokenData.access_token) {
+      console.error('No access token in response:', tokenData);
+      return new Response(
+        JSON.stringify({ error: 'No access token received from GitHub' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    console.log('Token exchange successful');
 
     // Trả về HTML page để xử lý token cho Decap CMS
     // Decap CMS sẽ nhận token và tự động authenticate
@@ -159,7 +209,11 @@ export async function onRequest(context) {
   } catch (error) {
     console.error('OAuth error:', error);
     return new Response(
-      JSON.stringify({ error: 'Failed to authenticate with GitHub' }),
+      JSON.stringify({ 
+        error: 'Failed to authenticate with GitHub',
+        message: error.message,
+        stack: error.stack
+      }),
       {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
