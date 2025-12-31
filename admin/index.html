@@ -9,13 +9,80 @@
     <!-- GitHub OAuth sẽ được xử lý bởi Cloudflare Pages Functions -->
   </head>
   <body>
+    <!-- Script xử lý OAuth token từ URL hash hoặc postMessage -->
+    <script>
+      (function() {
+        // Xử lý token từ URL hash (khi redirect về)
+        if (window.location.hash) {
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const token = hashParams.get('token');
+          const provider = hashParams.get('provider');
+          
+          if (token && provider === 'github') {
+            // Lưu token vào localStorage cho Decap CMS
+            // Thử cả hai key để đảm bảo tương thích
+            const userData = {
+              token: token,
+              provider: provider,
+              name: 'GitHub User',
+              login: 'github-user'
+            };
+            
+            try {
+              localStorage.setItem('netlify-cms-user', JSON.stringify(userData));
+              localStorage.setItem('decap-cms-user', JSON.stringify(userData));
+            } catch(e) {
+              console.error('Could not save token to localStorage:', e);
+            }
+            
+            // Xóa token khỏi URL hash để bảo mật
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+            
+            // Reload page để Decap CMS nhận token
+            window.location.reload();
+            return;
+          }
+        }
+        
+        // Lắng nghe postMessage từ popup OAuth
+        window.addEventListener('message', function(event) {
+          // Chỉ nhận message từ cùng origin
+          if (event.origin !== window.location.origin) return;
+          
+          if (event.data && event.data.type === 'authorization') {
+            const { token, provider } = event.data;
+            
+            if (token && provider === 'github') {
+              // Lưu token vào localStorage
+              const userData = {
+                token: token,
+                provider: provider,
+                name: 'GitHub User',
+                login: 'github-user'
+              };
+              
+              try {
+                localStorage.setItem('netlify-cms-user', JSON.stringify(userData));
+                localStorage.setItem('decap-cms-user', JSON.stringify(userData));
+              } catch(e) {
+                console.error('Could not save token to localStorage:', e);
+              }
+              
+              // Reload page để Decap CMS nhận token
+              window.location.reload();
+            }
+          }
+        });
+      })();
+    </script>
+    
     <!-- Decap CMS Script -->
     <!-- Sử dụng CDN từ unpkg với version mới nhất -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
     
     <!-- 
       Decap CMS sẽ tự động load file config.yml từ cùng thư mục
-      File config.yml phải được đặt tại: docs/admin/config.yml
+      File config.yml phải được đặt tại: admin/config.yml
     -->
   </body>
 </html>

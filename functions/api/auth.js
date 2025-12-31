@@ -61,20 +61,91 @@ export async function onRequest(context) {
       );
     }
 
-    // Trả về token cho Decap CMS
-    // Decap CMS sẽ tự động lưu token và sử dụng để authenticate
+    // Trả về HTML page để xử lý token cho Decap CMS
+    // Decap CMS sẽ nhận token và tự động authenticate
+    const token = tokenData.access_token;
+    const adminUrl = `${url.origin}/admin/`;
+    
+    // Escape token để tránh XSS
+    const escapedToken = token.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    
     return new Response(
-      JSON.stringify({
-        token: tokenData.access_token,
-        provider: 'github',
-      }),
+      `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Authenticating...</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+</head>
+<body>
+  <script>
+    (function() {
+      try {
+        const token = '${escapedToken}';
+        const adminUrl = '${adminUrl}';
+        
+        // Lưu token vào localStorage với key mà Decap CMS sử dụng
+        // Decap CMS sử dụng key 'netlify-cms-user' hoặc 'decap-cms-user'
+        const userData = {
+          token: token,
+          provider: 'github',
+          name: 'GitHub User',
+          login: 'github-user'
+        };
+        
+        // Thử cả hai key để đảm bảo tương thích
+        try {
+          localStorage.setItem('netlify-cms-user', JSON.stringify(userData));
+        } catch(e) {
+          console.warn('Could not save to netlify-cms-user:', e);
+        }
+        
+        try {
+          localStorage.setItem('decap-cms-user', JSON.stringify(userData));
+        } catch(e) {
+          console.warn('Could not save to decap-cms-user:', e);
+        }
+        
+        // Nếu mở trong popup (có window.opener), gửi token qua postMessage
+        if (window.opener && !window.opener.closed) {
+          try {
+            // Gửi token về parent window (Decap CMS)
+            window.opener.postMessage({
+              type: 'authorization',
+              provider: 'github',
+              token: token
+            }, window.location.origin);
+            
+            // Đợi một chút rồi đóng popup
+            setTimeout(function() {
+              window.close();
+            }, 100);
+            return;
+          } catch(e) {
+            console.warn('Could not send postMessage:', e);
+          }
+        }
+        
+        // Nếu không phải popup hoặc postMessage thất bại, redirect về admin
+        // Redirect với token trong hash để Decap CMS có thể đọc
+        window.location.href = adminUrl + '#/auth?token=' + encodeURIComponent(token) + '&provider=github';
+      } catch(error) {
+        console.error('Authentication error:', error);
+        document.body.innerHTML = '<p style="color: red;">Lỗi xác thực. Vui lòng thử lại.</p>';
+      }
+    })();
+  </script>
+  <p>Đang xác thực... Vui lòng đợi.</p>
+  <noscript>
+    <p>JavaScript is required for authentication. Please enable JavaScript and try again.</p>
+  </noscript>
+</body>
+</html>`,
       {
         status: 200,
         headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
         },
       }
     );
