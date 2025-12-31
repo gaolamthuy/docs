@@ -1,165 +1,37 @@
-# Decap CMS Configuration File
-# File này cấu hình Decap CMS để quản lý assets trên GitHub
-# Documentation: https://decapcms.org/docs/configuration-options/
-
-# ==========================================
-# BACKEND CONFIGURATION
-# ==========================================
 backend:
-  name: github
-  # Thay đổi repo và branch theo repository của bạn
-  # Format: owner/repo-name
-  repo: gaolamthuy/assets
-  branch: main # hoặc master, tùy theo branch chính của bạn
-  
-  # Cấu hình cho Cloudflare Pages
-  # Thay đổi URL này theo domain thực tế của bạn
-  base_url: https://assets.gaolamthuy.vn
-  auth_endpoint: api/auth
+  name: git-gateway
+  branch: main # Branch to update (optional; defaults to master)
 
-# ==========================================
-# MEDIA MANAGEMENT
-# ==========================================
-# Thư mục lưu trữ media files trong repository
-media_folder: "assets/images"
-# URL public để truy cập media files (từ root của website)
-public_folder: "/assets/images"
+media_folder: assets/upload # Media files will be stored in the repo under assets/upload
+public_folder: /assets/upload # The src attribute for uploaded media will begin with /assets/upload
 
-# ==========================================
-# LOCALIZATION (Tùy chọn)
-# ==========================================
-locale: "vi" # Tiếng Việt
-
-# ==========================================
-# COLLECTIONS - Định nghĩa các bộ sưu tập để quản lý
-# ==========================================
 collections:
-  # ==========================================
-  # COLLECTION 1: QUẢN LÝ HÌNH ẢNH
-  # ==========================================
-  - name: "images"
-    label: "📷 Hình Ảnh"
-    label_singular: "Hình ảnh"
-    folder: "assets/images"
-    create: true # Cho phép tạo file mới
-    delete: true # Cho phép xóa file
-    extension: "jpg,jpeg,png,gif,webp,svg"
-    format: "frontmatter" # Sử dụng frontmatter cho metadata
-    fields:
-      - { label: "Tên file", name: "title", widget: "string", required: false }
-      - { label: "Mô tả", name: "description", widget: "text", required: false }
-      - { label: "Hình ảnh", name: "image", widget: "image", required: true }
-      - { 
-          label: "Alt text", 
-          name: "alt", 
-          widget: "string", 
-          required: false,
-          hint: "Mô tả hình ảnh cho SEO và accessibility"
-        }
-      - { 
-          label: "Tags", 
-          name: "tags", 
-          widget: "list", 
-          required: false,
-          hint: "Thẻ phân loại hình ảnh"
-        }
-
-  # ==========================================
-  # COLLECTION 2: QUẢN LÝ ICONS
-  # ==========================================
-  - name: "icons"
-    label: "🎨 Icons"
-    label_singular: "Icon"
-    folder: "assets/icons"
+  - name: "pages" # Used in routes, e.g., /admin/collections/pages
+    label: "Pages" # Used in the UI
+    folder: "" # The path to the folder where the documents are stored
+    create: true # Allow users to create new documents in this collection
+    slug: "{{slug}}" # Filename template, e.g., YYYY-MM-DD-title.md
+    fields: # The fields for each document, usually in front matter
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Body", name: "body", widget: "markdown"}
+  
+  - name: "guide"
+    label: "Guide"
+    folder: "guide"
     create: true
-    delete: true
-    extension: "svg,png,ico"
-    format: "frontmatter"
+    slug: "{{slug}}"
     fields:
-      - { label: "Tên icon", name: "title", widget: "string", required: true }
-      - { label: "Mô tả", name: "description", widget: "text", required: false }
-      - { label: "Icon file", name: "icon", widget: "image", required: true }
-      - { 
-          label: "Kích thước", 
-          name: "size", 
-          widget: "select", 
-          options: ["16x16", "24x24", "32x32", "48x48", "64x64", "custom"],
-          required: false
-        }
-      - { 
-          label: "Màu sắc", 
-          name: "color", 
-          widget: "string", 
-          required: false,
-          hint: "Màu chủ đạo của icon (hex code)"
-        }
-
-  # ==========================================
-  # COLLECTION 3: QUẢN LÝ LOGOS
-  # ==========================================
-  - name: "logos"
-    label: "🏢 Logos"
-    label_singular: "Logo"
-    folder: "assets/logos"
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text", required: false}
+      - {label: "Body", name: "body", widget: "markdown"}
+  
+  - name: "examples"
+    label: "Examples"
+    folder: "examples"
     create: true
-    delete: true
-    extension: "svg,png,jpg,jpeg"
-    format: "frontmatter"
+    slug: "{{slug}}"
     fields:
-      - { label: "Tên logo", name: "title", widget: "string", required: true }
-      - { label: "Mô tả", name: "description", widget: "text", required: false }
-      - { label: "Logo file", name: "logo", widget: "image", required: true }
-      - { 
-          label: "Loại logo", 
-          name: "type", 
-          widget: "select", 
-          options: ["main", "variant", "icon", "wordmark", "other"],
-          default: "main",
-          required: false
-        }
-      - { 
-          label: "Kích thước", 
-          name: "dimensions", 
-          widget: "string", 
-          required: false,
-          hint: "Ví dụ: 200x200, 500x300"
-        }
-      - { 
-          label: "Định dạng", 
-          name: "format", 
-          widget: "select", 
-          options: ["SVG", "PNG", "JPG"],
-          required: false
-        }
-      - { 
-          label: "Màu nền", 
-          name: "background", 
-          widget: "select", 
-          options: ["transparent", "white", "dark", "custom"],
-          default: "transparent",
-          required: false
-        }
-
-  # ==========================================
-  # COLLECTION 4: QUẢN LÝ LOGOS BRAND (Subfolder)
-  # ==========================================
-  - name: "logos_brand"
-    label: "🏷️ Logos - Brand"
-    label_singular: "Logo Brand"
-    folder: "assets/logos/brand"
-    create: true
-    delete: true
-    extension: "svg,png,jpg,jpeg"
-    format: "frontmatter"
-    fields:
-      - { label: "Tên logo", name: "title", widget: "string", required: true }
-      - { label: "Mô tả", name: "description", widget: "text", required: false }
-      - { label: "Logo file", name: "logo", widget: "image", required: true }
-      - { 
-          label: "Phiên bản", 
-          name: "version", 
-          widget: "string", 
-          required: false,
-          hint: "Ví dụ: v1.0, v2.0"
-        }
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Body", name: "body", widget: "markdown"}
 
