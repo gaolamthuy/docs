@@ -10,7 +10,7 @@ export default defineConfig({
   // Theme configuration
   themeConfig: {
     // Logo configuration - using your assets
-    logo: '/assets/logos/logo-main-hexagon-extrawhiteborder-forproductimage-resize-200x200.png',
+    logo: '/assets/logos/brand/gaolamthuy/logo-main-hexagon-extrawhiteborder-forproductimage-resize-200x200.png',
     
     // Navigation
     nav: [

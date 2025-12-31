@@ -6,7 +6,7 @@ hero:
   text: "Documentation"
   tagline: "Tài liệu hướng dẫn và tham khảo"
   image:
-    src: /assets/logos/logo-main-hexagon-extrawhiteborder-forproductimage-resize-200x200.png
+    src: /assets/logos/brand/gaolamthuy/logo-main-hexagon-extrawhiteborder-forproductimage-resize-200x200.png
     alt: Logo
   actions:
     - theme: brand
