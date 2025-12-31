@@ -5,6 +5,8 @@ backend:
 media_folder: assets/upload
 public_folder: /assets/upload
 
+# Collections: Only Pages and Assets (Guide and Examples removed)
+
 collections:
   - name: "pages"
     label: "Pages"
