@@ -8,7 +8,7 @@ public_folder: /assets/upload
 collections:
   - name: "pages"
     label: "Pages"
-    folder: ""
+    folder: "pages"
     create: true
     slug: "{{slug}}"
     extension: md
