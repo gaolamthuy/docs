@@ -14,7 +14,7 @@ hero:
       link: /guide/
     - theme: alt
       text: Xem trên GitHub
-      link: https://github.com/yourusername/gaolamthuy-docs
+      link: https://github.com/gaolamthuy/docs
 
 features:
   - icon: 🚀

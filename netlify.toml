@@ -10,4 +10,5 @@
 # Enable Netlify Identity
 [build.environment]
   NODE_VERSION = "18"
+  BASE_URL = "/"
 

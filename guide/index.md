@@ -8,6 +8,7 @@ Chào mừng đến với tài liệu hướng dẫn!
 
 ## Nội dung
 
-- [Cài đặt](/guide/installation)
-- [Cấu hình](/guide/configuration)
+- [Cài đặt](/guide/installation) - Hướng dẫn cài đặt và thiết lập
+- [Cấu hình](/guide/configuration) - Cấu hình VitePress và DecapCMS
+- [Usage](/guide/usage) - Sử dụng brand logos với preview và thông tin
 

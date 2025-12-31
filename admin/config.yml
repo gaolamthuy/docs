@@ -6,16 +6,16 @@ media_folder: assets/upload
 public_folder: /assets/upload
 
 collections:
-  - name: "pages"
-    label: "Pages"
-    folder: "pages"
+  - name: "guide"
+    label: "Guide"
+    folder: "guide"
     create: true
     slug: "{{slug}}"
     extension: md
     format: yaml-frontmatter
     fields:
       - {label: "Title", name: "title", widget: "string", required: true}
-      - {label: "Layout", name: "layout", widget: "string", default: "page", required: false}
+      - {label: "Description", name: "description", widget: "text", required: false}
       - {label: "Body", name: "body", widget: "markdown"}
   
   - name: "assets"
