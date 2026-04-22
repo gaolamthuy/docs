@@ -29,6 +29,12 @@ Hướng dẫn sử dụng brand logos từ thư mục `assets/logos/brand`.
 
 - [200x200](https://docs.gaolamthuy.vn/assets/logos/brand/vietcombank/logo-200x200.png)
 
+## Techcombank
+
+<img src="/assets/logos/brand/techcombank/tcb-logo-only.svg" alt="Techcombank Logo" width="200" height="200" />
+
+- [SVG](https://docs.gaolamthuy.vn/assets/logos/brand/techcombank/tcb-logo-only.svg)
+
 ## Zalo
 
 ### Brand Version
